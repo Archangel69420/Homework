@@ -1,47 +1,29 @@
 package com.company;
 
-import javax.swing.*;
-import java.awt.event.*;
-
 public class Main {
+
     public static void main(String[] args) {
-        HW1 exp = new HW1(1000, 400);
-        exp.controller();
-    }
-}
-
-class HW1 {
-    private int x, y;
-    final String[] options = {"First", "Second", "Third"};
-    final JComboBox<String> menu = new JComboBox<>(options);
-    final JFrame frame = new JFrame("Very nice HW");
-
-    public HW1(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    private void setCanvas(int width, int height) {
-        frame.setSize(width, height);
-        menu.setBounds(20, 20, 400, 100);
-        frame.add(menu);
-        frame.setVisible(true);
-    }
-
-    public void controller() {
-        setCanvas(x, y);
-        selection();
-    }
-
-    public void selection() {
-        menu.addActionListener((ActionEvent e) -> {
-            Object selection = menu.getSelectedItem();
-            assert selection != null;
-            if (selection.equals("First"))
-                System.out.println("First");
-            else if (selection.equals("Second"))
-                System.out.println("Second");
-            else System.out.println("Third");
-        });
+        final int N = 7;
+        int[][] arr = new int[N][N];
+        int Srow = 0, Erow = 0, Scol = 0, Ecol = 0, k = 1;
+        while (k <= N*N) {
+            for (int r = Srow, c = Scol; r <= Erow && c >= Ecol; r ++, c--) {
+             arr[r][c] = k;
+             k++;
+            }
+            if (Scol <= N - 2) {
+                Scol++;
+                Erow++;
+            }
+            else {
+                Srow++;
+                Ecol++;
+            }
+        }
+        for (int[] v : arr) {
+            for (int i : v)
+                System.out.print(i + " ");
+            System.out.print("\n");
+        }
     }
 }
