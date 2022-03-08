@@ -35,8 +35,9 @@ class IntStack {
         return false;
     }
     public void push (int item) {
+        if (counter <= capacity) {
         staticStack[counter] = item;
-        counter ++;
+        counter ++; }
     }
     public int pop() {
         counter--;
