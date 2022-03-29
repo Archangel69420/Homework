@@ -1,81 +1,129 @@
 package com.company;
-import ibadts.*;
 
-/* public class Main {
+import java.io.*;
+import java.util.*;
+
+package com.company;
+
+import java.util.Random;
+
+public class Main {
+
     public static void main(String[] args) {
-        IntQueue queue = new IntQueue(5);
-        for (int i = 0; i < 5; i++)
-            queue.enqueue(i);
-        System.out.println(queue.dequeue());
-        System.out.println(queue.dequeue());
-        queue.enqueue(69);
-        for (int i = 0; i < 4; i ++)
-            System.out.println(queue.dequeue());
+        Random generator = new Random();
+        Node first = new Node(-1);
+        for (int i = 0; i < 1000; i++) {
+            first.add(generator.nextInt(100));
+        }
+        first.print();
+        System.out.println("------------------------------------------------");
+        first = first.remove(first, -1);
+        first.print();
+        Node second = new Node(0);
+        for (int i = 0; i < 1000; i ++) {
+            second.add(i);
+        }
+        System.out.println("------------------------------------------------");
+        second.add(50);
+        second = second.remove(second, 50);
+        second.print();
     }
 }
-
-class IntQueue {
-    int[] arr;
-    int capacity;
-    int count = 0;
-    public IntQueue(int capacity) {
-        arr = new int[capacity];
-        this.capacity = capacity;
+class Node {
+    Node(int v) {
+        value = v;
+        next = null;
     }
-    public void enqueue (int item) {
-        if (count < capacity) {
-            arr[count] = item;
-            count++;
-        }
+    void add (int v) {
+        if (next == null)
+            next = new Node(v);
+        else next.add(v);
+    }
+
+    Node add(Node to, Node from) {
+        to.add(from.value);
+        if (from.next == null)
+            return to;
         else
-            System.out.println("Limit exceeded");
+            return add(to, from.next);
     }
 
-    public int dequeue() {
-        if (!isEmpty()) {
-            int value = arr[0];
-            for (int i = 0; i < count - 1; i++) {
-                arr[i] = arr[i + 1];
-            }
-            count--;
-            return value;
-        } else return -1;
+    void print() {
+        System.out.println(value + " ");
+        if (next != null) next.print();
     }
-
-    public boolean isEmpty() {
-        if (count == 0)
-            return true;
-        return false;
+    Node remove (Node head, int v) {
+        if (head.value == v && head.next != null) {
+            return head.next;
+        }
+        else {
+            assert head.next != null;
+            return add(new Node(head.value), remove(head.next, v));
+        }
     }
-
-    public boolean isFull() {
-        if (count == capacity - 1)
-            return true;
-        return false;
-    }
-} */
+    int value;
+    Node next;
+}
 
 public class Main {
     public static void main(String[] args) {
-        Queue<String> economy = new Queue<>(), business = new Queue<>();
-        economy.enqueue("Sarah_A");
-        economy.enqueue("John_B");
-        economy.enqueue("Wendy_C");
-        business.enqueue("Sir_A");
-        business.enqueue("Madam_B");
-        business.enqueue("Rick_C");
-        byte counter = 1;
-        System.out.println("economy: " + economy);
-        System.out.println("business: " + business);
-        System.out.print("order: ");
-        while (!economy.isEmpty() || !business.isEmpty()) {
-            if (counter % 3 != 0 && !business.isEmpty())
-                System.out.print(business.dequeue() + " ");
-            else {
-                System.out.print(economy.dequeue() + " ");
-                counter = 0;
-            }
-            counter++;
+        Priority mt1 = new Priority("High Priority");
+        Priority mt2 = new Priority("Low Priority");
+        Priority mt3 = new Priority("Normal Priority #1");
+        Priority mt4 = new Priority("Normal Priority #2");
+        Priority mt5 = new Priority("Normal Priority #3");
+        mt1.thrd.setPriority(Thread.NORM_PRIORITY + 2);
+        mt2.thrd.setPriority(Thread.NORM_PRIORITY - 2);
+        mt1.thrd.start();
+        mt2.thrd.start();
+        mt3.thrd.start();
+        mt4.thrd.start();
+        mt5.thrd.start();
+        try {
+            mt1.thrd.join();
+            mt2.thrd.join();
+            mt3.thrd.join();
+            mt4.thrd.join();
+            mt5.thrd.join();
+        } catch (InterruptedException exc) {
+            System.out.println("Main thread interrupted.");
         }
+        System.out.println("\nHigh priority thread counted to " +
+                mt1.count);
+        System.out.println("Low priority thread counted to " +
+                mt2.count);
+        System.out.println("1st Normal priority thread counted to " +
+                mt3.count);
+        System.out.println("2nd Normal priority thread counted to " +
+                mt4.count);
+        System.out.println("3rd Normal priority thread counted to " +
+                mt5.count);
+    }
+}
+
+class Priority implements Runnable {
+    int count;
+    Thread thrd;
+    static boolean stop = false;
+    static String currentName;
+
+    Priority(String name) {
+        thrd = new Thread(this, name);
+        count = 0;
+        currentName = name;
+    }
+
+    public void run() {
+        System.out.println(thrd.getName() + " starting.");
+        do {
+            count++;
+            if (currentName.compareTo(thrd.getName()) != 0) {
+                currentName = thrd.getName();
+                System.out.println("In " + currentName);
+            }
+        } while (stop == false && count < 10000000);
+        stop = true;
+        System.out.println("\n" + thrd.getName() +
+                " terminating.");
     }
 }
